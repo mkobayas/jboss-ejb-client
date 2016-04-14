@@ -250,7 +250,15 @@ class ChannelAssociation {
             logger.debug("No waiting context found for async method invocation with id " + invocationId);
             return;
         }
+        
         receiverInvocationContext.proceedAsynchronously();
+
+        if(receiverInvocationContext.getClientInvocationContext().getInvokedMethod().getReturnType() == void.class) {
+            // OneWay
+            //  No more message
+            this.waitingMethodInvocations.remove(invocationId);
+            this.invocationIdsPerReceiverInvocationCtx.remove(receiverInvocationContext);
+        }
     }
 
     EJBReceiverInvocationContext getEJBReceiverInvocationContext(short invocationId) {
